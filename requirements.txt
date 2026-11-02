@@ -9,3 +9,8 @@ numpy
 torch
 scikit-learn
 pytest
+transformers>=4.39.0
+sentence-transformers>=2.6.0
+faiss-cpu>=1.8.0
+langchain-core>=0.1.40
+langgraph>=0.0.35
