@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+websockets
+sqlalchemy
+pymysql
+opencv-python-headless
+mediapipe
+numpy
+torch
+scikit-learn
+pytest
