@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sign Language Recognition Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; padding: 20px; }
+        header { text-align: center; margin-bottom: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .video-container { position: relative; width: 100%; height: 360px; background: #000; border-radius: 8px; overflow: hidden; }
+        video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        canvas { z-index: 10; }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 4px; background: #e0e0e0; font-size: 14px; margin-bottom: 10px; }
+        .meter-bar { width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+        .meter-fill { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
+        .btn { padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .btn:hover { background: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI Sign Language Recognition</h1>
+        <p>Real-Time ASL Gesture Translation & Dashboard</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Webcam & Hand Tracking</h2>
+            <div class="video-container">
+                <video id="webcam" autoplay playsinline muted></video>
+                <canvas id="landmark-overlay"></canvas>
+            </div>
+            <div style="margin-top: 15px;">
+                <span class="status-badge" id="camera-status">Camera: Offline</span>
+                <span class="status-badge" id="ws-status">WebSocket: Disconnected</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recognition Results</h2>
+            <div style="margin-bottom: 20px;">
+                <h3>Detected Sign: <span id="detected-sign" style="color: #007bff;">None</span></h3>
+                <label>Confidence Meter:</label>
+                <div class="meter-bar">
+                    <div id="confidence-fill" class="meter-fill"></div>
+                </div>
+                <span id="confidence-text">0%</span>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3>Translated Sentence Stream:</h3>
+                <div id="sentence-stream" style="min-height: 50px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-top: 5px;">
+                    Waiting for gestures...
+                </div>
+                <button class="btn" id="tts-btn">🔊 Text-to-Speech</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h2>MySQL Translation Logs (History)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gesture</th>
+                    <th>Confidence</th>
+                    <th>Translated Text</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="logs-table-body">
+                <tr>
+                    <td colspan="5" style="text-align: center;">No logs loaded</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const ttsBtn = document.getElementById('tts-btn');
+        const sentenceStream = document.getElementById('sentence-stream');
+        
+        ttsBtn.addEventListener('click', () => {
+            const text = sentenceStream.innerText;
+            if (text && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(utterance);
+            }
+        });
+    </script>
+</body>
+</html>
